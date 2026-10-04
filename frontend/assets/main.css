@@ -18,10 +18,7 @@ textarea {
   font: inherit;
 }
 button,
-a,
-input,
-select,
-textarea {
+a {
   outline-offset: 4px;
 }
 button {
@@ -50,7 +47,14 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-  outline: 2px solid #9bcbb1;
+  outline: none;
+  box-shadow: none;
+  border-color: #579873;
+}
+textarea:focus,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: none;
   border-color: #579873;
 }
 label {
@@ -162,26 +166,6 @@ td {
 tbody tr:hover {
   background: #fcfdfc;
 }
-dialog {
-  border: none;
-  padding: 0;
-  border-radius: 16px;
-  max-width: 620px;
-  width: calc(100% - 32px);
-  box-shadow: 0 20px 100px #0003;
-}
-dialog::backdrop {
-  background: #142b2466;
-  backdrop-filter: blur(3px);
-}
-.field-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-.field-grid .full {
-  grid-column: 1/-1;
-}
 .side-link {
   display: flex;
   align-items: center;
@@ -215,9 +199,6 @@ dialog::backdrop {
   border-radius: 20px;
 }
 @media (max-width: 767px) {
-  .field-grid {
-    grid-template-columns: 1fr;
-  }
   td,
   th {
     padding: 12px;

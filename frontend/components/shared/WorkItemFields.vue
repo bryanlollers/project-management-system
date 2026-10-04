@@ -5,9 +5,10 @@ defineProps({ statuses: { type: Array, required: true } });
 const form = defineModel({ type: Object, required: true });
 </script>
 <template>
-  <div class="full">
+  <div class="col-span-full">
     <label>Description</label>
     <textarea
+      class="resize-y max-h-[min(30dvh,240px)] overflow-y-auto"
       v-model="form.description"
       rows="3"
     />

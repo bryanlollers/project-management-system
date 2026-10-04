@@ -4,7 +4,7 @@ defineProps({ clients: { type: Array, required: true }, people: { type: Array, r
 const form = defineModel({ type: Object, required: true });
 </script>
 <template>
-  <div class="full">
+  <div class="col-span-full">
     <label>Client</label>
     <select
       v-model="form.client_id"
@@ -44,22 +44,24 @@ const form = defineModel({ type: Object, required: true });
       :min="form.start_date || undefined"
     />
   </div>
-  <div class="full">
+  <div class="col-span-full">
     <label>Team members</label>
-    <div class="flex flex-wrap gap-3">
-      <label
-        v-for="p in people"
-        :key="p.id"
-        class="flex gap-2 items-center"
-      >
-        <input
-          v-model="form.member_ids"
-          type="checkbox"
-          :value="p.id"
-          class="!w-auto"
-        />
-        {{ p.name }}
-      </label>
-    </div>
+    <UiScrollRegion label="Team member selection">
+      <div class="flex flex-wrap gap-3">
+        <label
+          v-for="p in people"
+          :key="p.id"
+          class="flex gap-2 items-center"
+        >
+          <input
+            v-model="form.member_ids"
+            type="checkbox"
+            :value="p.id"
+            class="!w-auto"
+          />
+          {{ p.name }}
+        </label>
+      </div>
+    </UiScrollRegion>
   </div>
 </template>
