@@ -34,7 +34,8 @@ defineExpose({ showModal, close });
   <UiModal ref="modal">
     <div
       v-if="selected"
-      class="p-7"
+      class="flex flex-col max-h-[calc(100dvh-32px)] p-7 [overflow-wrap:anywhere] [&>:first-child]:shrink-0"
+      :class="{ 'max-md:p-4': selectedKind === 'tasks' }"
     >
       <div class="flex justify-between gap-3">
         <div>
@@ -50,159 +51,178 @@ defineExpose({ showModal, close });
           <X :size="20" />
         </button>
       </div>
-      <div class="flex gap-2 mt-4">
-        <span
-          v-if="selected.status"
-          class="badge"
-          :class="selected.status"
-        >
-          {{ label(selected.status) }}
-        </span>
-        <span
-          v-if="selected.priority"
-          class="badge"
-          :class="selected.priority"
-        >
-          {{ selected.priority }}
-        </span>
-      </div>
-      <p
-        v-if="selected.description || selected.notes"
-        class="text-sm text-[#7b8980] leading-relaxed whitespace-pre-wrap mt-4"
-      >
-        {{ selected.description || selected.notes }}
-      </p>
-      <div class="grid grid-cols-2 gap-4 mt-5 text-xs">
-        <div v-if="selected.email">
-          <label>Email</label>
-          {{ selected.email }}
-        </div>
-        <div v-if="selected.phone">
-          <label>Phone</label>
-          {{ selected.phone }}
-        </div>
-        <div v-if="selected.role">
-          <label>Role</label>
-          {{ selected.role }}
-        </div>
-        <div v-if="selected.client">
-          <label>Client</label>
-          {{ selected.client.name }}
-        </div>
-        <div v-if="selected.project">
-          <label>Project</label>
-          {{ selected.project.name }}
-        </div>
-        <div v-if="selected.start_date">
-          <label>Start date</label>
-          {{ date(selected.start_date) }}
-        </div>
-        <div v-if="selected.end_date || selected.due_date">
-          <label>Due date</label>
-          {{ date(selected.end_date || selected.due_date) }}
-        </div>
-        <div v-if="selectedKind === 'tasks'">
-          <label>Assigned to</label>
-          {{ selected.assignee?.name || "Unassigned" }}
-        </div>
-      </div>
       <div
-        v-if="selected.members"
-        class="mt-5"
+        class="modal-body min-h-0 overscroll-contain"
+        :class="
+          selectedKind === 'tasks'
+            ? 'flex flex-auto flex-col overflow-hidden [&>*:not(.task-discussion)]:shrink-0'
+            : 'overflow-y-auto'
+        "
       >
-        <label>Team</label>
-        <div class="flex gap-3 flex-wrap">
+        <div class="flex gap-2 mt-4">
           <span
-            v-for="p in selected.members"
-            :key="p.id"
-            class="text-xs flex items-center gap-2"
+            v-if="selected.status"
+            class="badge"
+            :class="selected.status"
           >
-            <span class="avatar">{{ initials(p.name) }}</span>
-            {{ p.name }}
+            {{ label(selected.status) }}
+          </span>
+          <span
+            v-if="selected.priority"
+            class="badge"
+            :class="selected.priority"
+          >
+            {{ selected.priority }}
           </span>
         </div>
-      </div>
-      <div
-        v-if="selected.contacts?.length"
-        class="mt-6"
-      >
-        <label>Contacts</label>
-        <p
-          v-for="c in selected.contacts"
-          :key="c.email"
-          class="text-xs py-2"
+        <UiScrollRegion
+          v-if="selected.description || selected.notes"
+          label="Description"
+          max-height="min(10dvh, 80px)"
+          class="text-sm text-[#7b8980] leading-relaxed whitespace-pre-wrap mt-3"
         >
-          {{ c.name }} · {{ c.email }} {{ c.phone ? "· " + c.phone : "" }}
+          {{ selected.description || selected.notes }}
+        </UiScrollRegion>
+        <div class="grid grid-cols-2 gap-3 mt-3 text-xs">
+          <div v-if="selected.email">
+            <label>Email</label>
+            {{ selected.email }}
+          </div>
+          <div v-if="selected.phone">
+            <label>Phone</label>
+            {{ selected.phone }}
+          </div>
+          <div v-if="selected.role">
+            <label>Role</label>
+            {{ selected.role }}
+          </div>
+          <div v-if="selected.client">
+            <label>Client</label>
+            {{ selected.client.name }}
+          </div>
+          <div v-if="selected.project">
+            <label>Project</label>
+            {{ selected.project.name }}
+          </div>
+          <div v-if="selected.start_date">
+            <label>Start date</label>
+            {{ date(selected.start_date) }}
+          </div>
+          <div v-if="selected.end_date || selected.due_date">
+            <label>Due date</label>
+            {{ date(selected.end_date || selected.due_date) }}
+          </div>
+          <div v-if="selectedKind === 'tasks'">
+            <label>Assigned to</label>
+            {{ selected.assignee?.name || "Unassigned" }}
+          </div>
+        </div>
+        <div
+          v-if="selected.members"
+          class="mt-5"
+        >
+          <label>Team</label>
+          <UiScrollRegion label="Project team">
+            <div class="flex gap-3 flex-wrap">
+              <span
+                v-for="p in selected.members"
+                :key="p.id"
+                class="text-xs flex items-center gap-2"
+              >
+                <span class="avatar">{{ initials(p.name) }}</span>
+                {{ p.name }}
+              </span>
+            </div>
+          </UiScrollRegion>
+        </div>
+        <div
+          v-if="selected.contacts?.length"
+          class="mt-6"
+        >
+          <label>Contacts</label>
+          <UiScrollRegion label="Client contacts">
+            <p
+              v-for="c in selected.contacts"
+              :key="c.email"
+              class="text-xs py-2"
+            >
+              {{ c.name }} · {{ c.email }} {{ c.phone ? "· " + c.phone : "" }}
+            </p>
+          </UiScrollRegion>
+        </div>
+        <div
+          v-if="selected.projects"
+          class="mt-6"
+        >
+          <label>Associated projects</label>
+          <UiScrollRegion label="Associated projects">
+            <button
+              v-for="p in selected.projects"
+              :key="p.id"
+              class="w-full text-left border-b last:border-b-0 py-3 text-xs"
+              @click="showDetails('projects', p)"
+            >
+              {{ p.name }}
+              <span
+                class="badge float-right"
+                :class="p.status"
+              >
+                {{ label(p.status) }}
+              </span>
+            </button>
+            <p
+              v-if="!selected.projects.length"
+              class="text-xs muted"
+            >
+              No projects yet.
+            </p>
+          </UiScrollRegion>
+        </div>
+        <div
+          v-if="selected.tasks"
+          class="mt-6"
+        >
+          <label>Project tasks · {{ selected.progress }}% complete</label>
+          <div class="progress my-3">
+            <span :style="{ width: selected.progress + '%' }" />
+          </div>
+          <UiScrollRegion label="Project tasks">
+            <button
+              v-for="t in selected.tasks"
+              :key="t.id"
+              class="w-full text-left border-b last:border-b-0 py-3 text-xs"
+              @click="showDetails('tasks', t)"
+            >
+              {{ t.title }}
+              <span
+                class="badge float-right"
+                :class="t.status"
+              >
+                {{ label(t.status) }}
+              </span>
+            </button>
+          </UiScrollRegion>
+        </div>
+        <TasksTaskDiscussion
+          v-if="selectedKind === 'tasks' && selected"
+          :selected="selected"
+          :detail-activity="detailActivity"
+          :saving="saving"
+          v-model:comment="comment"
+          @comment="emit('comment')"
+          @move="(task, status) => emit('move', task, status)"
+        />
+        <p
+          v-if="error"
+          class="text-red-600 text-xs mt-4"
+          role="alert"
+        >
+          {{ error }}
         </p>
       </div>
-      <div
-        v-if="selected.projects"
-        class="mt-6"
-      >
-        <label>Associated projects</label>
-        <button
-          v-for="p in selected.projects"
-          :key="p.id"
-          class="w-full text-left border-b last:border-b-0 py-3 text-xs"
-          @click="showDetails('projects', p)"
-        >
-          {{ p.name }}
-          <span
-            class="badge float-right"
-            :class="p.status"
-          >
-            {{ label(p.status) }}
-          </span>
-        </button>
-        <p
-          v-if="!selected.projects.length"
-          class="text-xs muted"
-        >
-          No projects yet.
-        </p>
-      </div>
-      <div
-        v-if="selected.tasks"
-        class="mt-6"
-      >
-        <label>Project tasks · {{ selected.progress }}% complete</label>
-        <div class="progress my-3">
-          <span :style="{ width: selected.progress + '%' }" />
-        </div>
-        <button
-          v-for="t in selected.tasks"
-          :key="t.id"
-          class="w-full text-left border-b last:border-b-0 py-3 text-xs"
-          @click="showDetails('tasks', t)"
-        >
-          {{ t.title }}
-          <span
-            class="badge float-right"
-            :class="t.status"
-          >
-            {{ label(t.status) }}
-          </span>
-        </button>
-      </div>
-      <TasksTaskDiscussion
-        v-if="selectedKind === 'tasks' && selected"
-        :selected="selected"
-        :detail-activity="detailActivity"
-        :saving="saving"
-        v-model:comment="comment"
-        @comment="emit('comment')"
-        @move="(task, status) => emit('move', task, status)"
-      />
-      <p
-        v-if="error"
-        class="text-red-600 text-xs mt-4"
-        role="alert"
-      >
-        {{ error }}
-      </p>
       <div
         v-if="canEditResource(auth.user, selectedKind)"
-        class="flex justify-end gap-3 border-t mt-7 pt-5"
+        class="modal-footer shrink-0 flex justify-end gap-3 border-t mt-4 pt-3"
       >
         <button
           class="btn text-red-600"
