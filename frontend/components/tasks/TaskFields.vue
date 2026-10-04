@@ -7,7 +7,7 @@ const assignees = computed(
 );
 </script>
 <template>
-  <div class="full">
+  <div class="col-span-full">
     <label>Project</label>
     <select
       v-model="form.project_id"

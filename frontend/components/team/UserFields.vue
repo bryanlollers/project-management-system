@@ -24,7 +24,7 @@ defineProps({ editingId: { type: [Number, null], required: true } });
       </option>
     </select>
   </div>
-  <div class="full">
+  <div class="col-span-full">
     <label>
       {{ editingId ? "New password (leave blank to keep)" : "Password (12 characters minimum)" }}
     </label>
