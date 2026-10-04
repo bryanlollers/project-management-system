@@ -19,14 +19,15 @@ const form = defineModel({ type: Object, required: true });
     <label>Phone</label>
     <input v-model="form.phone" />
   </div>
-  <div class="full">
+  <div class="col-span-full">
     <label>Notes</label>
     <textarea
+      class="resize-y max-h-[min(30dvh,240px)] overflow-y-auto"
       v-model="form.notes"
       rows="3"
     />
   </div>
-  <div class="full">
+  <div class="col-span-full">
     <div class="flex justify-between mb-3">
       <label>Client contacts</label>
       <button
@@ -37,36 +38,38 @@ const form = defineModel({ type: Object, required: true });
         + Add contact
       </button>
     </div>
-    <div
-      v-for="(contact, i) in form.contacts"
-      :key="i"
-      class="flex gap-2 mb-2"
-    >
-      <input
-        v-model="contact.name"
-        placeholder="Name"
-        required
-        aria-label="Contact name"
-      />
-      <input
-        v-model="contact.email"
-        type="email"
-        placeholder="Email"
-        required
-        aria-label="Contact email"
-      />
-      <input
-        v-model="contact.phone"
-        placeholder="Phone"
-        aria-label="Contact phone"
-      />
-      <button
-        type="button"
-        @click="form.contacts.splice(i, 1)"
-        aria-label="Remove contact"
+    <UiScrollRegion label="Client contact fields">
+      <div
+        v-for="(contact, i) in form.contacts"
+        :key="i"
+        class="flex gap-2 mb-2"
       >
-        <X :size="14" />
-      </button>
-    </div>
+        <input
+          v-model="contact.name"
+          placeholder="Name"
+          required
+          aria-label="Contact name"
+        />
+        <input
+          v-model="contact.email"
+          type="email"
+          placeholder="Email"
+          required
+          aria-label="Contact email"
+        />
+        <input
+          v-model="contact.phone"
+          placeholder="Phone"
+          aria-label="Contact phone"
+        />
+        <button
+          type="button"
+          @click="form.contacts.splice(i, 1)"
+          aria-label="Remove contact"
+        >
+          <X :size="14" />
+        </button>
+      </div>
+    </UiScrollRegion>
   </div>
 </template>
