@@ -27,7 +27,7 @@ defineExpose({ showModal, close });
     @close="emit('clearError')"
   >
     <form
-      class="p-7"
+      class="flex flex-col max-h-[calc(100dvh-32px)] p-7 [overflow-wrap:anywhere] [&>:first-child]:shrink-0"
       @submit.prevent="emit('save')"
     >
       <div class="flex justify-between mb-6">
@@ -43,51 +43,53 @@ defineExpose({ showModal, close });
           <X :size="20" />
         </button>
       </div>
-      <div class="field-grid">
-        <div class="full">
-          <label>{{ editingKind === "tasks" ? "Task title" : "Name" }}</label>
-          <input
-            v-if="editingKind === 'tasks'"
-            v-model="form.title"
-            required
-            :maxlength="FORM_LIMITS.NAME"
+      <div class="modal-body min-h-0 overflow-y-auto overscroll-contain">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="col-span-full">
+            <label>{{ editingKind === "tasks" ? "Task title" : "Name" }}</label>
+            <input
+              v-if="editingKind === 'tasks'"
+              v-model="form.title"
+              required
+              :maxlength="FORM_LIMITS.NAME"
+            />
+            <input
+              v-else
+              v-model="form.name"
+              required
+              :maxlength="FORM_LIMITS.NAME"
+            />
+          </div>
+          <ClientsClientFields
+            v-if="editingKind === 'clients'"
+            v-model="form"
           />
-          <input
-            v-else
-            v-model="form.name"
-            required
-            :maxlength="FORM_LIMITS.NAME"
+          <ProjectsProjectFields
+            v-if="editingKind === 'projects'"
+            v-model="form"
+            :clients="clients"
+            :people="people"
+          />
+          <TasksTaskFields
+            v-if="editingKind === 'tasks'"
+            v-model="form"
+            :projects="projects"
+          />
+          <TeamUserFields
+            v-if="editingKind === 'users'"
+            v-model="form"
+            :editing-id="editingId"
           />
         </div>
-        <ClientsClientFields
-          v-if="editingKind === 'clients'"
-          v-model="form"
-        />
-        <ProjectsProjectFields
-          v-if="editingKind === 'projects'"
-          v-model="form"
-          :clients="clients"
-          :people="people"
-        />
-        <TasksTaskFields
-          v-if="editingKind === 'tasks'"
-          v-model="form"
-          :projects="projects"
-        />
-        <TeamUserFields
-          v-if="editingKind === 'users'"
-          v-model="form"
-          :editing-id="editingId"
-        />
+        <p
+          v-if="error"
+          class="text-xs text-red-600 mt-4"
+          role="alert"
+        >
+          {{ error }}
+        </p>
       </div>
-      <p
-        v-if="error"
-        class="text-xs text-red-600 mt-4"
-        role="alert"
-      >
-        {{ error }}
-      </p>
-      <div class="flex justify-end gap-3 mt-7">
+      <div class="modal-footer shrink-0 flex justify-end gap-3 mt-7">
         <button
           type="button"
           class="btn"

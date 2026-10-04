@@ -19,35 +19,57 @@ function moveTask(task, status) {
 }
 </script>
 <template>
-  <div class="mt-5">
-    <label v-if="canUpdateTask(auth.user, selected)">Update status</label>
-    <select
-      v-if="canUpdateTask(auth.user, selected)"
-      :value="selected.status"
-      @change="moveTask(selected, $event.target.value)"
-    >
-      <option
-        v-for="c in columns"
-        :key="c.id"
-        :value="c.id"
+  <div
+    class="task-discussion mt-3 flex flex-auto flex-col min-h-0 max-md:grid max-md:grid-cols-2 max-md:grid-rows-[auto_auto_minmax(0,auto)_auto] max-md:gap-x-3"
+  >
+    <div class="shrink-0 max-md:col-span-full max-md:row-start-1">
+      <label v-if="canUpdateTask(auth.user, selected)">Update status</label>
+      <select
+        v-if="canUpdateTask(auth.user, selected)"
+        :value="selected.status"
+        @change="moveTask(selected, $event.target.value)"
       >
-        {{ c.label }}
-      </option>
-    </select>
-    <h3 class="font-bold text-sm mt-7 mb-4">Comments</h3>
-    <div
-      v-for="c in selected.comments"
-      :key="c.id"
-      class="bg-[#f7f9f7] rounded-lg p-3 mb-3"
-    >
-      <p class="font-semibold text-xs">
-        {{ c.user?.name }}
-        <span class="float-right muted font-normal">{{ date(c.created_at) }}</span>
-      </p>
-      <p class="text-xs mt-2 whitespace-pre-wrap">{{ c.body }}</p>
+        <option
+          v-for="c in columns"
+          :key="c.id"
+          :value="c.id"
+        >
+          {{ c.label }}
+        </option>
+      </select>
     </div>
-    <form @submit.prevent="addComment">
+    <h3 class="shrink-0 font-bold text-sm mt-3 mb-2 max-md:col-start-1 max-md:row-start-2">
+      Comments
+    </h3>
+    <UiScrollRegion
+      label="Task comments"
+      class="max-md:col-start-1 max-md:row-start-3"
+      fill
+    >
+      <div
+        v-for="c in selected.comments"
+        :key="c.id"
+        class="bg-[#f7f9f7] rounded-lg p-3 mb-3"
+      >
+        <p class="font-semibold text-xs">
+          {{ c.user?.name }}
+          <span class="float-right muted font-normal">{{ date(c.created_at) }}</span>
+        </p>
+        <p class="text-xs mt-2 whitespace-pre-wrap">{{ c.body }}</p>
+      </div>
+      <p
+        v-if="!selected.comments?.length"
+        class="text-xs muted mb-3"
+      >
+        No comments yet.
+      </p>
+    </UiScrollRegion>
+    <form
+      class="shrink-0 mt-2 max-md:col-span-full max-md:row-start-4"
+      @submit.prevent="addComment"
+    >
       <textarea
+        class="min-h-16 max-h-[max(64px,min(15dvh,160px))] resize-y overflow-y-auto"
         v-model="comment"
         placeholder="Share an update…"
         rows="2"
@@ -62,13 +84,27 @@ function moveTask(task, status) {
         Add comment
       </button>
     </form>
-    <h3 class="font-bold text-sm mt-6 mb-3">Activity history</h3>
-    <p
-      v-for="a in detailActivity"
-      :key="a.id"
-      class="text-xs muted py-2 border-b last:border-b-0"
+    <h3 class="shrink-0 font-bold text-sm mt-3 mb-2 max-md:col-start-2 max-md:row-start-2">
+      Activity history
+    </h3>
+    <UiScrollRegion
+      label="Task activity history"
+      class="max-md:col-start-2 max-md:row-start-3"
+      fill
     >
-      {{ a.user?.name }} · {{ a.description }} · {{ date(a.created_at) }}
-    </p>
+      <p
+        v-for="a in detailActivity"
+        :key="a.id"
+        class="text-xs muted py-2 border-b last:border-b-0"
+      >
+        {{ a.user?.name }} · {{ a.description }} · {{ date(a.created_at) }}
+      </p>
+      <p
+        v-if="!detailActivity.length"
+        class="text-xs muted"
+      >
+        No activity yet.
+      </p>
+    </UiScrollRegion>
   </div>
 </template>
