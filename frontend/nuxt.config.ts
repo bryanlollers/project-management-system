@@ -2,12 +2,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2026-10-04",
   modules: ["@pinia/nuxt", "@nuxtjs/tailwindcss"],
   css: ["~/assets/main.css"],
-  runtimeConfig: {
-    public: {
-      apiBase: "/api",
-      demoLogin: process.env.NODE_ENV === "production" ? "false" : "true",
-    },
-  },
+  runtimeConfig: { public: { apiBase: "/api" } },
   nitro: {
     devProxy: {
       "/api": {

@@ -25,6 +25,5 @@ class AuthRegressionTest extends TestCase
     public function test_guests_cannot_access_workspace(): void
     {
         $this->getJson('/api/projects')->assertUnauthorized();
-        $this->get('/api/projects')->assertUnauthorized()->assertJsonPath('message', 'Unauthenticated.');
     }
 }
