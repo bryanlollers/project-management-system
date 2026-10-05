@@ -1,12 +1,12 @@
 # Pre-push verification
 
-Application checks were refreshed October 5, 2026, including the production Docker setup and PostgreSQL compatibility.
+Verified October 4, 2026 using the Windows workspace and fresh Linux Docker images.
 
 ## Completed checks
 
 | Check | Result |
 | --- | --- |
-| Backend tests | 21 passed, 141 assertions on SQLite and isolated PostgreSQL |
+| Backend tests | 19 passed, 125 assertions, isolated in-memory SQLite |
 | Backend formatting | Laravel Pint passed for app, routes, and tests |
 | Composer manifest | Strict validation passed |
 | API reference | OpenAPI and Postman formats validated; all 29 route operations covered |
@@ -15,8 +15,6 @@ Application checks were refreshed October 5, 2026, including the production Dock
 | Frontend type checking | Passed |
 | Frontend production build | Passed on Windows and fresh Linux container |
 | Docker Compose configuration | Valid |
-| Production Docker | API and frontend images built; proxy CRUD, comments, reports, logout, and admin creation passed |
-| Supabase preparation | Migrations verified in a private `pms` schema using local Postgres; live connection requires deployment credentials |
 | Docker images | Backend and frontend built successfully from lockfiles |
 | Fresh-container checks | Backend and frontend CI-equivalent commands passed |
 | CI configuration | YAML parsed; push/PR triggers, read-only permissions, timeouts, and concurrency configured |
