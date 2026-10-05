@@ -2,9 +2,9 @@
 
 A full-stack portfolio project built with Laravel and Nuxt 3 for managing clients, projects, tasks, and team reporting. It demonstrates REST API design, role-based authorization, feature-based architecture, automated testing, and a Docker development workflow.
 
-- **Backend:** Laravel 12, PHP 8.4, MySQL 8.4, Sanctum, Eloquent, Form Requests, API Resources, and policies.
+- **Backend:** Laravel 12, PHP 8.4, PostgreSQL 17 (Supabase for deployment), Sanctum, Eloquent, Form Requests, API Resources, and policies.
 - **Frontend:** Nuxt 3, Vue 3, TypeScript, Tailwind CSS, Pinia, and Lucide icons.
-- **Development:** Docker Compose, SQLite test databases, Laravel Pint, Prettier, and GitHub Actions.
+- **Development:** Docker Compose, isolated PostgreSQL tests, Laravel Pint, Prettier, and GitHub Actions.
 
 Read the [frontend architecture guide](frontend/README.md) and [backend architecture guide](backend/README.md) for the application structure. See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 
@@ -16,7 +16,7 @@ Requirements: Docker Engine/Desktop with Docker Compose and Git.
 docker compose up --build -d
 ```
 
-Open [the workspace](http://localhost:3000). Laravel runs at `http://localhost:8000/api`. MySQL is private to the Compose network. Startup migrates the database and seeds demo data; named volumes persist the database, application storage, and Laravel application key. This Compose configuration is a development environment.
+Open [the workspace](http://localhost:3000). Laravel runs at `http://localhost:8000/api`. PostgreSQL runs in Docker and is also available locally at `127.0.0.1:5432`. Startup migrates the database and seeds demo data; named volumes persist the database, application storage, and Laravel application key. This Compose configuration is a development environment.
 
 The login page includes prefilled demo credentials and shortcuts for Admin, Manager, and Staff accounts. Demo account definitions are available in the [authentication constants](frontend/constants/auth.ts) and [database seeder](backend/database/seeders/DatabaseSeeder.php).
 
@@ -30,19 +30,19 @@ docker compose down
 
 ## Run locally
 
-Use PHP 8.4 with OpenSSL, mbstring, fileinfo, PDO, SQLite, MySQL, DOM, and XML support; Composer 2; and Node 22.13 or newer. Install dependencies from the committed lockfiles.
+Use PHP 8.4 with OpenSSL, mbstring, fileinfo, PDO PostgreSQL, SQLite (for unit tests), DOM, and XML support; Composer 2; and Node 22.13 or newer. Install dependencies from the committed lockfiles.
 
 ```sh
 cd backend
 composer install
 cp .env.example .env
 php artisan key:generate
-php -r "file_exists('database/database.sqlite') || touch('database/database.sqlite');"
+docker compose -f ../compose.yaml up -d postgres
 php artisan migrate --seed
 php artisan serve --host=127.0.0.1 --port=8000
 ```
 
-The backend example environment defaults to SQLite. For MySQL configure `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` before migrating. On PowerShell, replace `cp` with `Copy-Item`. PHP must load a valid configuration; inspect it with `php --ini`.
+The backend example environment connects to local PostgreSQL using the `pms` database and schema. Docker initializes the schema on a fresh database volume. Set `POSTGRES_LOCAL_PORT` when port 5432 is occupied, and match `DB_PORT` when running Laravel outside Docker. On PowerShell, replace `cp` with `Copy-Item`. PHP must load a valid configuration; inspect it with `php --ini`.
 
 In another terminal:
 
@@ -126,9 +126,13 @@ docker compose exec frontend npm run typecheck
 docker compose exec frontend npm run build
 ```
 
-For local checks, run `composer test` and `composer format:check` in `backend/`, then the frontend npm commands in `frontend/`. Tests use in-memory SQLite; they do not need the demo database. Run Nuxt type checking and build sequentially because both generate `.nuxt` files.
+Run `docker compose -f compose.test.yaml up --build --abort-on-container-exit --exit-code-from tests` to check against disposable PostgreSQL, then `docker compose -f compose.test.yaml down`. The SQLite suite remains available as a fast additional check. Both are isolated from development data. Run Nuxt type checking and build sequentially because both generate `.nuxt` files.
 
 GitHub Actions runs the application checks on pushes and pull requests.
+
+## Deployment
+
+For Docker on a server with Supabase Postgres and automatic HTTPS, follow the [deployment guide](docs/DEPLOYMENT.md). Production images, Compose configuration, and environment examples are included.
 
 ## Development environment
 

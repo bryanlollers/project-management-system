@@ -1,5 +1,7 @@
 # Frontend structure
 
+The [production deployment](../docs/DEPLOYMENT.md) runs the built Nuxt server and proxies API requests to Laravel. Demo login defaults are disabled in production; `NUXT_PUBLIC_DEMO_LOGIN` controls their visibility.
+
 Each section owns a Nuxt page, Pinia store, API service, page composable, and component folder.
 
 | URL          | Page                        | Store / service | Components / composables |

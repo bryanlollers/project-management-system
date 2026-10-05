@@ -1,15 +1,17 @@
 services:
-  mysql:
-    image: mysql:8.4
+  postgres:
+    image: postgres:17-alpine
     environment:
-      MYSQL_DATABASE: orbit
-      MYSQL_USER: orbit
-      MYSQL_PASSWORD: orbit_dev
-      MYSQL_ROOT_PASSWORD: root_dev
+      POSTGRES_DB: pms
+      POSTGRES_USER: pms
+      POSTGRES_PASSWORD: pms_dev
+    ports:
+      - "127.0.0.1:${POSTGRES_LOCAL_PORT:-5432}:5432"
     volumes:
-      - mysql-data:/var/lib/mysql
+      - postgres-data:/var/lib/postgresql/data
+      - ./backend/docker/postgres-init.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "pg_isready -U pms -d pms"]
       interval: 5s
       retries: 20
   api:
@@ -20,12 +22,15 @@ services:
       APP_ENV: local
       APP_DEBUG: "true"
       APP_URL: http://localhost:8000
-      DB_CONNECTION: mysql
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_DATABASE: orbit
-      DB_USERNAME: orbit
-      DB_PASSWORD: orbit_dev
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: pms
+      DB_USERNAME: pms
+      DB_PASSWORD: pms_dev
+      DB_SCHEMA: pms
+      DB_SSLMODE: disable
+      DB_URL: ""
       SEED_DEMO: "true"
     volumes:
       - ./backend/app:/app/app
@@ -36,7 +41,7 @@ services:
       - api-storage:/app/storage
       - api-config:/app/runtime
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
   frontend:
     build: ./frontend
@@ -51,6 +56,6 @@ services:
     depends_on:
       - api
 volumes:
-  mysql-data:
+  postgres-data:
   api-storage:
   api-config:
