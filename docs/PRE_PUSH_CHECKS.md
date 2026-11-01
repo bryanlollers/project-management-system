@@ -16,7 +16,7 @@ Application checks were refreshed October 5, 2026, including the production Dock
 | Frontend production build | Passed on Windows and fresh Linux container |
 | Docker Compose configuration | Valid |
 | Production Docker | API and frontend images built; proxy CRUD, comments, reports, logout, and admin creation passed |
-| Supabase preparation | Migrations verified in a private `pms` schema using local Postgres; live connection requires deployment credentials |
+| PostgreSQL preparation | Application tables use the `pms` schema; production requires a configured PostgreSQL server |
 | Docker images | Backend and frontend built successfully from lockfiles |
 | Fresh-container checks | Backend and frontend CI-equivalent commands passed |
 | CI configuration | YAML parsed; push/PR triggers, read-only permissions, timeouts, and concurrency configured |

@@ -1,16 +1,18 @@
-# Docker deployment with Supabase
+# Docker deployment with PostgreSQL
 
-The production stack runs Laravel under Apache, the built Nuxt server, and Caddy for HTTPS. Supabase provides Postgres. Authentication and authorization continue to use Laravel Sanctum and policies; Supabase Auth and its browser SDK are not required.
+The production stack runs Laravel under Apache, the built Nuxt server, and Caddy for HTTPS. Configure an existing PostgreSQL server reachable from the API container; the production Compose file does not provision a database. Authentication and authorization use Laravel Sanctum and policies.
 
-Local development uses PostgreSQL 17 and the same `pms` schema. Development and deployment share Laravel migrations; deploying a new database does not require a MySQL-to-Postgres conversion. Existing MySQL development records are not imported automatically. For development against hosted Supabase, use a separate project and its session-pooler credentials with `DB_SSLMODE=require`; never run development seeders or tests against the production project.
+Local development uses PostgreSQL 17 and the same `pms` schema. Development and deployment share Laravel migrations. Existing MySQL development records are not imported automatically.
 
-## Supabase database
+## PostgreSQL database
 
-1. Create a Supabase project. In **Connect**, copy the **Session pooler** host, username, database, and password. Use port `5432`. The session pooler supports IPv4 and prepared statements; direct connections are also suitable when the server supports IPv6. See [Supabase connection guidance](https://supabase.com/docs/guides/database/connecting-to-postgres).
-2. Run [supabase-schema.sql](../deploy/supabase-schema.sql) in the Supabase SQL Editor. This creates the `pms` schema for Laravel tables.
-3. Keep `pms` out of the Data API's exposed schemas. The application accesses it only through Laravel's server-side database connection. Supabase's `auth` and `storage` schemas remain separate. See [private schemas](https://supabase.com/docs/guides/database/tables).
+1. Provision a database and a dedicated application login with permission to create and manage its tables.
+2. Connect to that database as the application login and run [postgres-schema.sql](../deploy/postgres-schema.sql) before Laravel migrations. This creates the `pms` schema owned by the application login.
+3. Set the host, port, database, username, and password in `deploy/.env`. Use a separate database for development and tests.
 
-The production configuration requires encrypted database connections. For certificate verification, mount Supabase's root certificate into the API container and set `DB_SSLROOTCERT` to its container path and `DB_SSLMODE=verify-full` in a Compose override.
+Remote connections use TLS by default (`DB_SSLMODE=require`). For certificate verification, mount the database server's root certificate into the API container and set `DB_SSLROOTCERT` to its container path and `DB_SSLMODE=verify-full` in a Compose override. For a PostgreSQL server on a trusted local network without TLS, explicitly set `DB_SSLMODE=disable`.
+
+Keep `DB_SCHEMA=pms` for existing installations. Changing it selects a different set of tables and does not migrate existing data.
 
 ## Server setup
 
@@ -22,7 +24,7 @@ cd project-management-system
 cp deploy/.env.example deploy/.env
 ```
 
-Edit `deploy/.env` with your domain, certificate contact email, and Supabase connection parameters. Generate the application key once:
+Edit `deploy/.env` with your domain, certificate contact email, and PostgreSQL connection parameters. Generate the application key once:
 
 ```sh
 docker run --rm php:8.4-cli php -r 'echo "base64:".base64_encode(random_bytes(32)).PHP_EOL;'
@@ -47,7 +49,7 @@ Visit `https://your-domain` and sign in. Check project creation, tasks, comments
 
 ## Updates and operations
 
-Back up the Supabase database before schema changes. Fetch the desired commit, rebuild, migrate, and recreate containers:
+Back up the PostgreSQL database before schema changes. Fetch the desired commit, rebuild, migrate, and recreate containers:
 
 ```sh
 git pull --ff-only
@@ -59,7 +61,7 @@ docker compose --env-file deploy/.env -f compose.production.yaml logs --tail=100
 
 Environment changes require recreating containers. Application caches are generated at startup using deployment variables; migrations are explicit release commands. `/up` is the API process health endpoint, not a database readiness check. Check database readiness using `php artisan migrate:status` inside the API container.
 
-`APP_DEBUG` stays off, logs go to container stderr, and application storage persists in a volume. Queue jobs run synchronously in this deployment. Keep the server updated and arrange database backups in Supabase. Do not delete production volumes during routine updates.
+`APP_DEBUG` stays off, logs go to container stderr, and application storage persists in a volume. Queue jobs run synchronously in this deployment. Keep the server updated and arrange regular PostgreSQL database backups. Do not delete production volumes during routine updates.
 
 Trusted proxy headers are accepted because the API is private to the Compose network. Do not publish its port directly. HTTPS is required for the frontend's secure session cookie.
 
@@ -72,4 +74,4 @@ docker compose -f compose.test.yaml up --build --abort-on-container-exit --exit-
 docker compose -f compose.test.yaml down
 ```
 
-The test database is temporary and separate from Supabase. CI runs backend tests against SQLite and Postgres. Production images can be built without live credentials; running migrations and HTTPS requires your configured Supabase project and domain.
+The test database is temporary and separate from production. CI runs backend tests against SQLite and Postgres. Production images can be built without live credentials; running migrations and HTTPS requires your configured PostgreSQL server and domain.

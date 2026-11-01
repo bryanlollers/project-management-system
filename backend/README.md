@@ -1,6 +1,6 @@
 # Backend structure
 
-For production Docker hosting with Supabase Postgres, see the [deployment guide](../docs/DEPLOYMENT.md). Database schema and SSL settings are configurable through `DB_SCHEMA`, `DB_SSLMODE`, and `DB_SSLROOTCERT`. Create the first administrator with `php artisan app:create-admin` after migrations.
+For production Docker hosting with PostgreSQL, see the [deployment guide](../docs/DEPLOYMENT.md). Database schema and SSL settings are configurable through `DB_SCHEMA`, `DB_SSLMODE`, and `DB_SSLROOTCERT`. Create the first administrator with `php artisan app:create-admin` after migrations.
 
 Local development also uses PostgreSQL 17 with a `pms` database and schema. Compose creates the schema on the first database startup. The example environment connects to the Docker database from a locally running Laravel process; the API container uses the `postgres` service host. Run the isolated PostgreSQL suite with `docker compose -f compose.test.yaml up --build --abort-on-container-exit --exit-code-from tests` from the repository root.
 

@@ -2,7 +2,7 @@
 
 A full-stack portfolio project built with Laravel and Nuxt 3 for managing clients, projects, tasks, and team reporting. It demonstrates REST API design, role-based authorization, feature-based architecture, automated testing, and a Docker development workflow.
 
-- **Backend:** Laravel 12, PHP 8.4, PostgreSQL 17 (Supabase for deployment), Sanctum, Eloquent, Form Requests, API Resources, and policies.
+- **Backend:** Laravel 12, PHP 8.4, PostgreSQL 17, Sanctum, Eloquent, Form Requests, API Resources, and policies.
 - **Frontend:** Nuxt 3, Vue 3, TypeScript, Tailwind CSS, Pinia, and Lucide icons.
 - **Development:** Docker Compose, isolated PostgreSQL tests, Laravel Pint, Prettier, and GitHub Actions.
 
@@ -132,7 +132,7 @@ GitHub Actions runs the application checks on pushes and pull requests.
 
 ## Deployment
 
-For Docker on a server with Supabase Postgres and automatic HTTPS, follow the [deployment guide](docs/DEPLOYMENT.md). Production images, Compose configuration, and environment examples are included.
+For Docker on a server with PostgreSQL and automatic HTTPS, follow the [deployment guide](docs/DEPLOYMENT.md). Production images, Compose configuration, and environment examples are included.
 
 ## Development environment
 

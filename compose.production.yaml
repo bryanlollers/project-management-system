@@ -15,13 +15,13 @@ services:
       LOG_CHANNEL: stderr
       LOG_LEVEL: warning
       DB_CONNECTION: pgsql
-      DB_HOST: ${DB_HOST:?Set the Supabase session pooler host}
+      DB_HOST: ${DB_HOST:?Set the PostgreSQL database host}
       DB_PORT: ${DB_PORT:-5432}
-      DB_DATABASE: ${DB_DATABASE:-postgres}
-      DB_USERNAME: ${DB_USERNAME:?Set the Supabase database username}
-      DB_PASSWORD: ${DB_PASSWORD:?Set the Supabase database password}
-      DB_SCHEMA: pms
-      DB_SSLMODE: require
+      DB_DATABASE: ${DB_DATABASE:-pms}
+      DB_USERNAME: ${DB_USERNAME:?Set the PostgreSQL database username}
+      DB_PASSWORD: ${DB_PASSWORD:?Set the PostgreSQL database password}
+      DB_SCHEMA: ${DB_SCHEMA:-pms}
+      DB_SSLMODE: ${DB_SSLMODE:-require}
       CACHE_STORE: database
       SESSION_DRIVER: database
       SESSION_SECURE_COOKIE: 'true'
