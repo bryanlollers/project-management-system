@@ -1,15 +1,16 @@
-name: project-management-postgres-tests
+name: project-management-mysql-tests
 services:
-  postgres:
-    image: postgres:17-alpine
+  mysql:
+    image: mysql:8.4.11
     environment:
-      POSTGRES_DB: pms_test
-      POSTGRES_USER: pms_test
-      POSTGRES_PASSWORD: local_test_only
+      MYSQL_ROOT_PASSWORD: local_test_root_only
+      MYSQL_DATABASE: pms_test
+      MYSQL_USER: pms_test
+      MYSQL_PASSWORD: local_test_only
     tmpfs:
-      - /var/lib/postgresql/data
+      - /var/lib/mysql
     healthcheck:
-      test: [CMD-SHELL, 'pg_isready -U pms_test -d pms_test']
+      test: [CMD-SHELL, "MYSQL_PWD=$$MYSQL_PASSWORD mysql -h 127.0.0.1 -u pms_test -D pms_test -e 'SELECT 1'"]
       interval: 2s
       timeout: 5s
       retries: 20
@@ -18,21 +19,18 @@ services:
     environment:
       APP_ENV: testing
       APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
-      DB_CONNECTION: pgsql
-      DB_HOST: postgres
-      DB_PORT: 5432
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
       DB_DATABASE: pms_test
       DB_USERNAME: pms_test
       DB_PASSWORD: local_test_only
-      DB_SCHEMA: pms
-      DB_SSLMODE: disable
       DB_URL: ''
     depends_on:
-      postgres:
+      mysql:
         condition: service_healthy
     entrypoint: [sh, -c]
     command:
       - >-
         cp .env.example .env
-        && php -r '$$pdo = new PDO("pgsql:host=postgres;dbname=pms_test", "pms_test", "local_test_only"); $$pdo->exec("CREATE SCHEMA IF NOT EXISTS pms");'
         && php artisan test

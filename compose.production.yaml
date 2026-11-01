@@ -14,14 +14,13 @@ services:
       TRUSTED_PROXIES: '*'
       LOG_CHANNEL: stderr
       LOG_LEVEL: warning
-      DB_CONNECTION: pgsql
-      DB_HOST: ${DB_HOST:?Set the PostgreSQL database host}
-      DB_PORT: ${DB_PORT:-5432}
+      DB_CONNECTION: mysql
+      DB_HOST: ${DB_HOST:?Set the MySQL database host}
+      DB_PORT: ${DB_PORT:-3306}
       DB_DATABASE: ${DB_DATABASE:-pms}
-      DB_USERNAME: ${DB_USERNAME:?Set the PostgreSQL database username}
-      DB_PASSWORD: ${DB_PASSWORD:?Set the PostgreSQL database password}
-      DB_SCHEMA: ${DB_SCHEMA:-pms}
-      DB_SSLMODE: ${DB_SSLMODE:-require}
+      DB_USERNAME: ${DB_USERNAME:?Set the MySQL database username}
+      DB_PASSWORD: ${DB_PASSWORD:?Set the MySQL database password}
+      MYSQL_ATTR_SSL_CA: ${MYSQL_ATTR_SSL_CA:-}
       CACHE_STORE: database
       SESSION_DRIVER: database
       SESSION_SECURE_COOKIE: 'true'

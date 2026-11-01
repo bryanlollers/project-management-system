@@ -1,12 +1,12 @@
 # Pre-push verification
 
-Application checks were refreshed October 5, 2026, including the production Docker setup and PostgreSQL compatibility.
+MySQL configuration checks were refreshed November 2, 2026. The backend suite passed on SQLite and isolated MySQL (21 tests, 142 assertions); Laravel Pint and Compose configuration checks passed, and the production API image built with PDO MySQL and connected to the development database. The running app confirmed MySQL 8.4.11; login, authenticated list/dashboard requests, and logout passed through the frontend proxy. The broader application and browser checks below were recorded October 5, 2026 unless listed in this refresh.
 
 ## Completed checks
 
 | Check | Result |
 | --- | --- |
-| Backend tests | 21 passed, 141 assertions on SQLite and isolated PostgreSQL |
+| Backend tests | 21 passed, 142 assertions on SQLite and isolated MySQL |
 | Backend formatting | Laravel Pint passed for app, routes, and tests |
 | Composer manifest | Strict validation passed |
 | API reference | OpenAPI and Postman formats validated; all 29 route operations covered |
@@ -16,7 +16,7 @@ Application checks were refreshed October 5, 2026, including the production Dock
 | Frontend production build | Passed on Windows and fresh Linux container |
 | Docker Compose configuration | Valid |
 | Production Docker | API and frontend images built; proxy CRUD, comments, reports, logout, and admin creation passed |
-| PostgreSQL preparation | Application tables use the `pms` schema; production requires a configured PostgreSQL server |
+| MySQL preparation | Development uses the existing `orbit` database; production uses its configured MySQL database |
 | Docker images | Backend and frontend built successfully from lockfiles |
 | Fresh-container checks | Backend and frontend CI-equivalent commands passed |
 | CI configuration | YAML parsed; push/PR triggers, read-only permissions, timeouts, and concurrency configured |

@@ -1,6 +1,6 @@
 FROM php:8.4-apache AS runtime
-RUN apt-get update && apt-get install -y --no-install-recommends unzip libpq-dev libonig-dev libzip-dev \
-    && docker-php-ext-install pdo_pgsql mbstring zip opcache \
+RUN apt-get update && apt-get install -y --no-install-recommends unzip libonig-dev libzip-dev \
+    && docker-php-ext-install pdo_mysql mbstring zip opcache \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

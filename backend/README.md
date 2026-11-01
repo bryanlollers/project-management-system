@@ -1,8 +1,8 @@
 # Backend structure
 
-For production Docker hosting with PostgreSQL, see the [deployment guide](../docs/DEPLOYMENT.md). Database schema and SSL settings are configurable through `DB_SCHEMA`, `DB_SSLMODE`, and `DB_SSLROOTCERT`. Create the first administrator with `php artisan app:create-admin` after migrations.
+For production Docker hosting with MySQL, see the [deployment guide](../docs/DEPLOYMENT.md). Set the connection through `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD`; use `MYSQL_ATTR_SSL_CA` for a mounted TLS CA certificate. Create the first administrator with `php artisan app:create-admin` after migrations.
 
-Local development also uses PostgreSQL 17 with a `pms` database and schema. Compose creates the schema on the first database startup. The example environment connects to the Docker database from a locally running Laravel process; the API container uses the `postgres` service host. Run the isolated PostgreSQL suite with `docker compose -f compose.test.yaml up --build --abort-on-container-exit --exit-code-from tests` from the repository root.
+Local development also uses MySQL 8.4 with a `orbit` database. Compose creates the database on the first database startup. The example environment connects to the Docker database from a locally running Laravel process; the API container uses the `mysql` service host. Run the isolated MySQL suite with `docker compose -f compose.test.yaml up --build --abort-on-container-exit --exit-code-from tests` from the repository root.
 
 Each API feature owns its controller, service, request validation, and response resources. `routes/api.php` registers explicit controllers; there is no resource-kind dispatcher.
 
