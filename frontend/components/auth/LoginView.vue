@@ -3,9 +3,10 @@ import { ArrowRight, Layers } from "lucide-vue-next";
 import { getErrorMessage } from "~/utils/errors";
 import { DEMO_EMAILS, DEMO_PASSWORD } from "~/constants/auth";
 const auth = useAuthStore();
+const demoLogin = String(useRuntimeConfig().public.demoLogin) === "true";
 defineProps({ sessionError: { type: String, required: false } });
-const email = ref(DEMO_EMAILS[0]),
-  password = ref(DEMO_PASSWORD),
+const email = ref(demoLogin ? DEMO_EMAILS[0] : ""),
+  password = ref(demoLogin ? DEMO_PASSWORD : ""),
   saving = ref(false),
   error = ref("");
 async function login() {
@@ -82,7 +83,10 @@ async function login() {
         {{ saving ? "Signing in…" : "Sign in to your workspace" }}
         <ArrowRight :size="16" />
       </button>
-      <p class="text-xs muted mt-6 leading-relaxed">
+      <p
+        v-if="demoLogin"
+        class="text-xs muted mt-6 leading-relaxed"
+      >
         Demo accounts: {{ DEMO_EMAILS.join(", ") }}
         <br />
         Password:
